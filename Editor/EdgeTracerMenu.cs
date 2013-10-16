@@ -233,7 +233,6 @@ public class EdgeTracerMenu : EditorWindow
     [MenuItem("Window/EdgeTracer")]
     public static void ShowWindow()
     {
-        //Show existing window instance. If one doesn't exist, make one.
         EditorWindow.GetWindow(typeof(EdgeTracerMenu));
     }
 

@@ -11,10 +11,10 @@ public class LevelEditor : EditorWindow
     public Material m_material = null;
     public Material m_grid_shader = null;
     Vector2 size = new Vector2(10,10);
-    public GameObject stone = (GameObject)Resources.Load("Stone");
-    public GameObject world = GameObject.Find("World");
+    //public GameObject stone = (GameObject)Resources.Load("Stone");
+    public GameObject world = null;
     Transform t = null;
-    void ClearWorld()
+    /*void ClearWorld()
     {
         if (world == null)
             return;
@@ -49,8 +49,10 @@ public class LevelEditor : EditorWindow
     GameObject generateGrid(Vector2 size,string name= "Ground",bool uvsized = false,Material mat =null)
     {
         if (world == null)
-            world = new GameObject("World");
-
+        {
+            if((world = GameObject.Find("World")) == null)
+                world = new GameObject("World");
+        }
         
         Vector3[] vertice = (Vector3[])_Vertices.Clone();
         Vector2[] uv = (Vector2[])_UV.Clone();
@@ -77,19 +79,19 @@ public class LevelEditor : EditorWindow
         _object.renderer.material = mat == null ? m_material : mat;
         _object.transform.parent = world.transform;
         return _object;
-    }
+    }*/
 
 
 
 
 
 
-    [MenuItem("Window/LevelEditor")]
+    [MenuItem("Window/niktamer")]
     public static void ShowWindow()
     {
-        EditorWindow.GetWindow(typeof(LevelEditor));
+        LevelEditor editor = (LevelEditor)EditorWindow.GetWindow(typeof(LevelEditor));
     }
-
+    
     void OnGUI()
     {
         m_material = (Material)EditorGUILayout.ObjectField("1",m_material, typeof(Material));
@@ -98,10 +100,10 @@ public class LevelEditor : EditorWindow
         size = EditorGUILayout.Vector2Field("Grid Size", size);
         if (GUILayout.Button("TEST editor"))
         {
-            ClearWorld();
+        /*    ClearWorld();
             generateGrid(size);
             generateGrid(size+new Vector2(2,2),"Grid", true, m_grid_shader).transform.position += new Vector3(0, 0.01f, 0);
-            GenerateBound(size);
+            GenerateBound(size);*/
         }
     }
 }
