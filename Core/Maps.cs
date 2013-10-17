@@ -19,24 +19,25 @@ public class Maps {
     public static Material s_grid;
     public static Transform s_stone; // stone template
     public static Transform s_breakable; // stone template
-    public static string PATH = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+    public static string PATH = Application.dataPath;
     /* */
 
     //
-    static Vector3[] _Vertices = { new Vector3(-1, 0, -1), new Vector3(1, 0, -1), new Vector3(-1, 0, 1), new Vector3(1, 0, 1) };
-    static Vector2[] _UV = { new Vector2(0, 0), new Vector2(0, 1), new Vector2(1, 0), new Vector2(1, 1) };
-    static Vector3[] _Normal = { new Vector3(0, 1, 0), new Vector3(0, 1, 0), new Vector3(0, 1, 0), new Vector3(0, 1, 0) };
-    static int[] _Indices = { 0, 2, 1, 1, 2, 3 };
+    public static Vector3[] _Vertices = { new Vector3(-1, 0, -1), new Vector3(1, 0, -1), new Vector3(-1, 0, 1), new Vector3(1, 0, 1) };
+    public static Vector2[] _UV = { new Vector2(0, 0), new Vector2(0, 1), new Vector2(1, 0), new Vector2(1, 1) };
+    public static Vector3[] _Normal = { new Vector3(0, 1, 0), new Vector3(0, 1, 0), new Vector3(0, 1, 0), new Vector3(0, 1, 0) };
+    public static int[] _Indices = { 0, 2, 1, 1, 2, 3 };
     //
 
     private Tile[][] m_maps;
     GameObject m_gameMaps;
     private IntVector2 m_size;
+    private IntVector2 m_size_2;
     private string m_name;
     public IntVector2 Size
     {
         get { return m_size;}
-        private set { m_size = value; /*Generate();*/}
+        set { m_size = value; m_size_2 = m_size != null? value / 2 : null; /*Generate();*/}
     }
     public string Name
     {
@@ -47,20 +48,25 @@ public class Maps {
 
     public Maps(IntVector2 size = null)
     {
-        m_size = size;
+        Size = size;
+        if (m_gameMaps == null)
+        {
+            if ((m_gameMaps = GameObject.Find("GameMaps")) == null)
+                m_gameMaps = new GameObject("GameMaps");
+        }
     }
 
 
     public void  Generate()
     {
-        if (m_size == null) return;
+        if (Size == null) return;
         Clear();
         // create virtual maps
-        m_maps = new Tile[m_size.x][];
-        for(int i = 0; i < m_size.x; i++)
+        m_maps = new Tile[Size.x][];
+        for (int i = 0; i < Size.x; i++)
         {
-            m_maps[i] = new Tile[m_size.y];
-            for(int j = 0; j < m_size.y; j++)
+            m_maps[i] = new Tile[Size.y];
+            for (int j = 0; j < Size.y; j++)
                 m_maps[i][j] = new Tile(MapsTiles.EMPTY_TILE,new IntVector2(i,j));
         }
 
@@ -71,13 +77,26 @@ public class Maps {
             if((m_gameMaps = GameObject.Find("GameMaps")) == null)
                 m_gameMaps = new GameObject("GameMaps");
         }
-        generateGrid(m_size);
-        generateGrid(m_size+new IntVector2(4,4),"grid",true,s_grid);
-        GenerateBound(m_size + new IntVector2(2, 2));
+        generateGrid(Size);
+        generateGrid(Size + new IntVector2(4, 4), "grid", true, s_grid).transform.position += new Vector3(0, 0.01f, 0) ;
+        GenerateBound(Size + new IntVector2(2, 2));
     }
 
+    public void Fill(MapsTiles type)
+    {
+        IntVector2 p = new IntVector2();
+        for (int i = 0; i < m_size.x; i++)
+        { 
+            p.x = i;
+            for(int j = 0; j < m_size.y; j++)
+            {
+                p.y = j;
+                AddBlock(type, p);
+            }
+        }
+    }
 
-    public void add(MapsTiles type, IntVector2 pos)
+    public void AddBlock(MapsTiles type, IntVector2 pos)
     {
         if (m_maps[pos.x][pos.y] != null)
         {
@@ -88,9 +107,9 @@ public class Maps {
                 GameObject.DestroyImmediate(m_maps[pos.x][pos.y].block.gameObject);
             m_maps[pos.x][pos.y].m_type = type;
             Transform obj = null;
-            IntVector2 size_2 = m_size / 2;
+            ;
 
-            Vector3 b_pos = new Vector3(pos.x + (m_size.x % 2 == 0 ? 0.5f : 1f) - size_2.x, 0.5f, pos.y + (m_size.y % 2 == 0 ? 0.5f : 1f) - size_2.y);
+            Vector3 b_pos = new Vector3(pos.x + (Size.x % 2 == 0 ? 0.5f : 0) - m_size_2.x, 0.5f, pos.y + (Size.y % 2 == 0 ? 0.5f : 0f) - m_size_2.y);
             switch (type)
             { 
                 case MapsTiles.SOLID_BLOCK:
@@ -134,6 +153,7 @@ public class Maps {
         _object.renderer.material = mat == null ? s_material : mat;
         _object.transform.parent = m_gameMaps.transform;
         return _object;
+       
     }
 
     void GenerateBound(IntVector2 size)
@@ -146,7 +166,7 @@ public class Maps {
 
             for (int j = -size_2.y; j < m2; j++)
             {
-                Debug.Log(i + " "+ j);
+                //Debug.Log(i + " "+ j);
                 if ((i != -size_2.x && i != m1 - 1) && (j != -size_2.y && j != m2 - 1))
                     continue;
                 Transform o = (Transform)GameObject.Instantiate(s_stone, new Vector3(i + (size.x % 2 == 0 ? 0.5f : 0f), 0.5f, j+(size.y % 2 == 0 ? 0.5f : 0f)), new Quaternion());
@@ -168,14 +188,38 @@ public class Maps {
             children.Add(child.gameObject);
         children.ForEach((child) => { Transform.DestroyImmediate(child); });
     }
-    
 
+    public IntVector2 GetTilePosition(Vector2 pos)
+    {
+        IntVector2 a = new IntVector2((int)(Mathf.Floor(pos.x + (m_size.x % 2 != 0 ? 0.5f : 0f))) + m_size_2.x, (int)(Mathf.Floor(pos.y + (m_size.x % 2 != 0 ? 0.5f : 0f))) + m_size_2.y);
+        //a.x = Mathf.Clamp(a.x, 0, m_size.x - 1);
+        //a.y = Mathf.Clamp(a.y, 0, m_size.y - 1);
+        //Debug.Log("size/2 : " + m_size_2.x + " " + m_size_2.y);
+
+        if (a.x < 0 || a.x >= m_size.x || a.y < 0 || a.y >= m_size.y)
+            return null;
+        return a;
+    }
+
+    public Vector3 NormalizePosition(Vector3 pos, out bool _out)
+    {
+        IntVector2 tpos = GetTilePosition(new Vector2(pos.x, pos.z));
+        _out = false;
+        if (tpos == null)
+            return pos;
+        pos.x = -m_size_2.x + tpos.x + (m_size.x % 2 == 0 ? 0.5f : 0f);
+        pos.z = -m_size_2.y + tpos.y + (m_size.y % 2 == 0 ? 0.5f : 0f);
+        _out = true;
+        return pos;
+    }
+        
     public void LoadFromFile(string path)
     {
+        Debug.Log("load " + path);
         FileStream stream = new FileStream(PATH +"\\"+ path, FileMode.Open);
         int x = stream.ReadByte();
         int y = stream.ReadByte();
-        m_size = new IntVector2(x, y); 
+        Size = new IntVector2(x, y); 
         Clear();
         Generate();
         for (var i = 0; i < x; i++)
@@ -183,7 +227,7 @@ public class Maps {
             for (var j = 0; j < y; j++)
             {
                 int type = stream.ReadByte();
-                add((MapsTiles)type, new IntVector2(i,j));
+                AddBlock((MapsTiles)type, new IntVector2(i,j));
             }
         }
         stream.Close();
@@ -191,15 +235,15 @@ public class Maps {
 
     public void SaveToFile(string path)
     {
-        if (m_size == null)
+        if (Size == null)
             return;
         Debug.Log(PATH + "\\" + path);
         FileStream stream = new FileStream(PATH + "\\" + path, FileMode.Create);
-        stream.WriteByte((byte)m_size.x);
-        stream.WriteByte((byte)m_size.y);
-        for (var i = 0; i < m_size.x; i++)
+        stream.WriteByte((byte)Size.x);
+        stream.WriteByte((byte)Size.y);
+        for (var i = 0; i < Size.x; i++)
         {
-            for (var j = 0; j < m_size.y; j++)
+            for (var j = 0; j < Size.y; j++)
             {
                 stream.WriteByte((byte)m_maps[i][j].m_type);
             }

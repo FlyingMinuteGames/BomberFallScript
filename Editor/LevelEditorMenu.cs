@@ -50,7 +50,7 @@ public class LevelEditorMenu : EditorWindow
             if (maps != null)
             {
                 Debug.Log("add "+ type + " block to maps");
-                maps.add(type,new IntVector2((int)pos.x,(int)pos.y));
+                maps.AddBlock(type,new IntVector2((int)pos.x,(int)pos.y));
 
             }
         }
