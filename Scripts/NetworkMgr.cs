@@ -83,16 +83,17 @@ public class NetworkMgr : MonoBehaviour {
             UpdateCurrentMove();
 	}
 
-    delegate void Callback(NetworkMgr me, bool enable);
+    delegate int Callback(NetworkMgr me, bool enable);
     public Vector3 m_force = new Vector3(0, 0, 0);
-    private KeyCode[] key_binding = { KeyCode.Z, KeyCode.Q, KeyCode.S, KeyCode.D, KeyCode.Keypad2, KeyCode.Keypad5 };
+    private KeyCode[] key_binding = { KeyCode.Z, KeyCode.Q, KeyCode.S, KeyCode.D, KeyCode.Keypad2, KeyCode.Keypad5, KeyCode.Space};
     private Callback[] action_callback = {
-                                            (me,enable) => { me.m_force += enable ? Vector3.forward : Vector3.back; },
-                                            (me,enable) => { me.m_force += !enable ? Vector3.right : Vector3.left; },
-                                            (me,enable) => { me.m_force += !enable ? Vector3.forward : Vector3.back; },
-                                            (me,enable) => { me.m_force += enable ? Vector3.right : Vector3.left; },
-                                            (me,enable) => { /*Debug.Log("callback !");*/ Physics.gravity = Vector3.back*Config.CONST_GRAVITY * Config.CONST_FACTOR;},
-                                            (me,enable) => { Physics.gravity = Vector3.down*Config.CONST_GRAVITY * Config.CONST_FACTOR;}
+                                            (me,enable) => { me.m_force += enable ? Vector3.forward : Vector3.back; return 1;},
+                                            (me,enable) => { me.m_force += !enable ? Vector3.right : Vector3.left; return 1;},
+                                            (me,enable) => { me.m_force += !enable ? Vector3.forward : Vector3.back; return 1;},
+                                            (me,enable) => { me.m_force += enable ? Vector3.right : Vector3.left; return 1;},
+                                            (me,enable) => { /*Debug.Log("callback !");*/ Physics.gravity = Vector3.back*Config.CONST_GRAVITY * Config.CONST_FACTOR; return 0;},
+                                            (me,enable) => { Physics.gravity = Vector3.down*Config.CONST_GRAVITY * Config.CONST_FACTOR; return 0;},
+                                            (me,enable) => { if(enable) me.networkView.RPC("ServerRecvDropBomb",RPCMode.Server, Network.player); return 0;}
                                           };
     private Vector3[] action_binding = {
                                          new Vector3(0,0,1),
@@ -109,21 +110,15 @@ public class NetworkMgr : MonoBehaviour {
 
     void UpdateCurrentMove()
     {
-        bool needUpdate = false;
+        int flag = 0;
         for (int i = 0, len = key_binding.Length; i < len; i++)
         {
             if (Input.GetKeyDown(key_binding[i]))
-            {
-                action_callback[i](this, true);
-                needUpdate = true;
-            }
+                flag |= action_callback[i](this, true);
             else if (Input.GetKeyUp(key_binding[i]))
-            {
-                action_callback[i](this, false);
-                needUpdate = true;
-            } 
+                flag |= action_callback[i](this, false);
         }
-        if(needUpdate)
+        if((flag & 1) != 0)
             this.networkView.RPC("ServerRecvChangeMove", RPCMode.Server, Network.player, m_force.normalized);
 
     }
@@ -182,7 +177,7 @@ public class NetworkMgr : MonoBehaviour {
     }
 
     [RPC]
-    void ClientRecvDropBomb(NetworkPlayer player)
+    void ClientRecvDropBomb()
     {
         if (!server)
             return;
@@ -198,17 +193,22 @@ public class NetworkMgr : MonoBehaviour {
         current_map.ExplodeAt(new IntVector2(x, y), radius);
     }
 
-
+    
+    
     void HandleBomb(Vector3 pos)
     {
+        
+        pos = current_map.TilePosToWorldPos(current_map.GetTilePosition(pos));
         Network.Instantiate(bomb, pos, Quaternion.identity,0);
-        networkView.RPC("ClientRecvDropBomb", RPCMode.Others, null);
+        networkView.RPC("ClientRecvDropBomb", RPCMode.Others);
     }
 
-    public void HandleExplode(IntVector2 pos,int radius)
+    public void HandleExplode(BombScript script, IntVector2 pos, int radius)
     {
+        Debug.Log("ça pete !");
         current_map.ExplodeAt(pos, radius);
         networkView.RPC("ClientRecvBomb", RPCMode.Others, pos.x, pos.y, radius);
+        Network.Destroy(script.gameObject);
     }
 
 
@@ -223,7 +223,7 @@ public class NetworkMgr : MonoBehaviour {
             script.callback = () =>
             {
                 IntVector2 tpos = current_map.GetTilePosition(script.transform.position);
-                this.HandleExplode(tpos,1);
+                this.HandleExplode(script, tpos, 1);
             };
         }
     

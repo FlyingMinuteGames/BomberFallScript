@@ -3,22 +3,22 @@ using System.Collections;
 
 public class BombScript : MonoBehaviour {
 
-    private static int timer = 4; // in seconds;
     public delegate void Callback();
     public Callback callback;
+    private float timer = 4;
 	// Use this for initialization
 	void Start () {
-        StartCoroutine(WaitAndExplode());
+        
 	}
 
-    IEnumerator WaitAndExplode()
+    /*IEnumerator WaitAndExplode()
     {
         Debug.Log("begin explode");
         yield return new WaitForSeconds(timer);
         if (callback != null)
             callback();
         Debug.Log("explode!");
-    }
+    }*/
 
     void OnNetworkInstantiate(NetworkMessageInfo info)
     {
@@ -27,6 +27,12 @@ public class BombScript : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        
+        if (timer <= 0)
+        {
+            Debug.Log("explode!");
+            if (callback != null)
+                callback();
+        }
+        else timer -= Time.deltaTime;
 	}
 }

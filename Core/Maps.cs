@@ -287,7 +287,7 @@ public class Maps {
     public void ExplodeAt(IntVector2 a, int radius)
     {
 
-        for (int i = a.x+1; i < a.x + radius; i++)
+        for (int i = a.x+1; i <= a.x + radius; i++)
         {
             if (i >= m_size.x)
                 break;
@@ -298,7 +298,7 @@ public class Maps {
             }
         }
 
-        for (int i = a.x-1; i > a.x-1-radius; i--)
+        for (int i = a.x-1; i >= a.x-1-radius; i--)
         {
             if (i < 0)
                 break;
@@ -309,7 +309,7 @@ public class Maps {
             }
         }
 
-        for (int i = a.y+1; i < a.y + radius; i++)
+        for (int i = a.y+1; i <= a.y + radius; i++)
         {
             if (i >= m_size.y)
                 break;
@@ -320,7 +320,7 @@ public class Maps {
             }
         }
 
-        for (int i = a.y-1; i > a.y - 1 - radius; i--)
+        for (int i = a.y-1; i >= a.y - 1 - radius; i--)
         {
 
             if (i < 0)
