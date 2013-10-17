@@ -187,9 +187,8 @@ public class NetworkMgr : MonoBehaviour {
     [RPC]
     void ClientRecvBomb(int x,int y,int radius)
     {
-        if (!server)
+        if (server)
             return;
-
         current_map.ExplodeAt(new IntVector2(x, y), radius);
     }
 
@@ -197,8 +196,9 @@ public class NetworkMgr : MonoBehaviour {
     
     void HandleBomb(Vector3 pos)
     {
-        
-        pos = current_map.TilePosToWorldPos(current_map.GetTilePosition(pos));
+        IntVector2 tpos = current_map.GetTilePosition(pos.x,pos.z);
+        Debug.Log("pos:"+tpos);
+        pos = current_map.TilePosToWorldPos(tpos);
         Network.Instantiate(bomb, pos, Quaternion.identity,0);
         networkView.RPC("ClientRecvDropBomb", RPCMode.Others);
     }
@@ -208,7 +208,7 @@ public class NetworkMgr : MonoBehaviour {
         Debug.Log("ça pete !");
         current_map.ExplodeAt(pos, radius);
         networkView.RPC("ClientRecvBomb", RPCMode.Others, pos.x, pos.y, radius);
-        Network.Destroy(script.gameObject);
+        Network.Destroy(script.gameObject.GetComponent<NetworkView>().viewID);
     }
 
 
@@ -222,7 +222,8 @@ public class NetworkMgr : MonoBehaviour {
 
             script.callback = () =>
             {
-                IntVector2 tpos = current_map.GetTilePosition(script.transform.position);
+                Vector3 pos = script.transform.position;
+                IntVector2 tpos = current_map.GetTilePosition(pos.x, pos.z);
                 this.HandleExplode(script, tpos, 1);
             };
         }

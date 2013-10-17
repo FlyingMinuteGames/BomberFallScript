@@ -208,9 +208,15 @@ public class Maps {
         children.ForEach((child) => { Transform.DestroyImmediate(child); });
     }
 
+
     public IntVector2 GetTilePosition(Vector2 pos)
     {
-        IntVector2 a = new IntVector2((int)(Mathf.Floor(pos.x + (m_size.x % 2 != 0 ? 0.5f : 0f))) + m_size_2.x, (int)(Mathf.Floor(pos.y + (m_size.x % 2 != 0 ? 0.5f : 0f))) + m_size_2.y);
+        return GetTilePosition(pos.x, pos.y);
+    }
+
+    public IntVector2 GetTilePosition(float x, float y)
+    {
+        IntVector2 a = new IntVector2((int)(Mathf.Floor(x + (m_size.x % 2 != 0 ? 0.5f : 0f))) + m_size_2.x, (int)(Mathf.Floor(y + (m_size.x % 2 != 0 ? 0.5f : 0f))) + m_size_2.y);
         //a.x = Mathf.Clamp(a.x, 0, m_size.x - 1);
         //a.y = Mathf.Clamp(a.y, 0, m_size.y - 1);
         //Debug.Log("size/2 : " + m_size_2.x + " " + m_size_2.y);

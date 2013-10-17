@@ -44,7 +44,7 @@ public class IntVector2 {
         return b == 0 ? a : new IntVector2(a._x / b, a._y / b);
     }
 
-    public string ToString()
+    override public string ToString()
     {
         return "(" + _x + ", " + _y + ")";
     }
