@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class NetworkMgr : MonoBehaviour {
 
@@ -7,7 +8,8 @@ public class NetworkMgr : MonoBehaviour {
     { 
         OBJECT_PLAYER,
         OBJECT_BLOCK,
-        OBJECT_POWERUP
+        OBJECT_POWERUP,
+        OBJECT_BOMB
     }
 
     public bool server;
@@ -19,7 +21,19 @@ public class NetworkMgr : MonoBehaviour {
     private NetworkPlayer[] _players = new NetworkPlayer[4];
     private NetworkController[] controllers = new NetworkController[4];
     private Maps current_map;
+    private IDictionary<int, BombScript> m_bombs = new Dictionary<int, BombScript>();
+    public Maps Map
+    {
+        get { return current_map; }
+    }
 	// Use this for initialization
+    private static NetworkMgr s_networkMgr = null;
+    public static NetworkMgr Instance
+    {
+        get{ return s_networkMgr;}
+        private set { s_networkMgr = value; }
+    }
+
     Vector3 GetInitPos(int index)
     {
         if (index < 0 || index > 3)
@@ -28,6 +42,7 @@ public class NetworkMgr : MonoBehaviour {
         return pos;
     }
 	void Start () {
+        Instance = this;
         Physics.gravity = Vector3.down * Config.CONST_GRAVITY * Config.CONST_FACTOR;
         Application.runInBackground = true;
         if (server)
@@ -161,6 +176,7 @@ public class NetworkMgr : MonoBehaviour {
         if ((pIndex = GetPlayerIndex(player)) >= 0)
         {
             Vector3 cpos =  controllers[pIndex].transform.position;
+            HandleBomb(cpos);
         }
 
     }
@@ -170,23 +186,47 @@ public class NetworkMgr : MonoBehaviour {
     {
         if (!server)
             return;
-        int pIndex;
-        if ((pIndex = GetPlayerIndex(player)) >= 0)
-        {
-            Vector3 cpos = controllers[pIndex].transform.position;
-        }
-
     }
+
+
+    [RPC]
+    void ClientRecvBomb(int x,int y,int radius)
+    {
+        if (!server)
+            return;
+
+        current_map.ExplodeAt(new IntVector2(x, y), radius);
+    }
+
 
     void HandleBomb(Vector3 pos)
     {
         Network.Instantiate(bomb, pos, Quaternion.identity,0);
+        networkView.RPC("ClientRecvDropBomb", RPCMode.Others, null);
     }
 
-    void HandleExplode(IntVector2 pos)
-    { 
-        m
+    public void HandleExplode(IntVector2 pos,int radius)
+    {
+        current_map.ExplodeAt(pos, radius);
+        networkView.RPC("ClientRecvBomb", RPCMode.Others, pos.x, pos.y, radius);
     }
 
+
+    public void RegisterObj(Object o, ObjectType type)
+    {
+        
+        if (type == ObjectType.OBJECT_BOMB && server)
+        {
+            BombScript script = ((BombScript)o);
+            m_bombs[o.GetInstanceID()] = script;
+
+            script.callback = () =>
+            {
+                IntVector2 tpos = current_map.GetTilePosition(script.transform.position);
+                this.HandleExplode(tpos,1);
+            };
+        }
+    
+    }
 
 }

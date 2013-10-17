@@ -283,4 +283,55 @@ public class Maps {
         m.LoadFromFile(path);
         return m;
     }
+
+    public void ExplodeAt(IntVector2 a, int radius)
+    {
+
+        for (int i = a.x+1; i < a.x + radius; i++)
+        {
+            if (i >= m_size.x)
+                break;
+            if (m_maps[i][a.y].m_type == MapsTiles.DESTRUCTIBLE_BLOCK)
+            {
+                AddBlock(MapsTiles.EMPTY_TILE, new IntVector2(i, a.y));
+                break;
+            }
+        }
+
+        for (int i = a.x-1; i > a.x-1-radius; i--)
+        {
+            if (i < 0)
+                break;
+            if (m_maps[i][a.y].m_type == MapsTiles.DESTRUCTIBLE_BLOCK)
+            {
+                AddBlock(MapsTiles.EMPTY_TILE, new IntVector2(i, a.y));
+                break;
+            }
+        }
+
+        for (int i = a.y+1; i < a.y + radius; i++)
+        {
+            if (i >= m_size.y)
+                break;
+            if (m_maps[a.x][i].m_type == MapsTiles.DESTRUCTIBLE_BLOCK)
+            {
+                AddBlock(MapsTiles.EMPTY_TILE, new IntVector2(a.x, i));
+                break;
+            }
+        }
+
+        for (int i = a.y-1; i > a.y - 1 - radius; i--)
+        {
+
+            if (i < 0)
+                break;
+            if (m_maps[a.x][i].m_type == MapsTiles.DESTRUCTIBLE_BLOCK)
+            {
+                AddBlock(MapsTiles.EMPTY_TILE, new IntVector2(a.x, i));
+                break;
+            }
+        }
+
+
+    }
 }
