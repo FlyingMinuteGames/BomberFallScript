@@ -6,15 +6,16 @@ public class MainMenu : MonoBehaviour {
 public GameObject networkManager; // Prefab
 
 private GameObject instantiatedMaster; //Prefab instancié
-private StartNetwork scriptStartNet ;
+private NetworkMgr scriptStartNet;
 
 private string serverIP = "127.0.0.1";
 private int serverPort = 25000;
 
     void OnGUI()
     {
+        
         int menuSizeX  = 460;
-        int menuSizeY = 115;
+        int menuSizeY = 150;
         float menuPosX = 20;
         float menuPosY = Screen.height/2 - menuSizeY/2;
         Rect mainMenu = new Rect(menuPosX, menuPosY, menuSizeX, menuSizeY);
@@ -32,22 +33,33 @@ private int serverPort = 25000;
         {
             //Création du serveur
             instantiatedMaster = (GameObject)Instantiate(networkManager, Vector3.zero, Quaternion.identity);
-            scriptStartNet = instantiatedMaster.GetComponent<StartNetwork>();
+            instantiatedMaster.name = "NetworkManager";
+            scriptStartNet = instantiatedMaster.GetComponent<NetworkMgr>();
             scriptStartNet.server = true;
             scriptStartNet.listenPort = serverPort;
+            Maps maps = Maps.LoadMapsFromFile("map1.map");
             Destroy(this);
         }
         if ( GUI.Button(new Rect(10, 60, sizeButtonX, sizeButtonY), "Join"))
         {
             //Rejoindre serveur
             instantiatedMaster = (GameObject)Instantiate(networkManager, Vector3.zero, Quaternion.identity);
-            scriptStartNet = instantiatedMaster.GetComponent<StartNetwork>();
+            instantiatedMaster.name = "NetworkManager";
+            scriptStartNet = instantiatedMaster.GetComponent<NetworkMgr>();
             scriptStartNet.server = false;
             scriptStartNet.remoteIP = serverIP;
             scriptStartNet.listenPort = serverPort;
             Debug.Log("Main menu remote IP "+serverIP);
+            Maps maps = Maps.LoadMapsFromFile("map1.map");
+            Destroy(this);
+
+        }
+        if (GUI.Button(new Rect(10, 100, sizeButtonX, sizeButtonY), "Test maps"))
+        {
+            Maps maps = Maps.LoadMapsFromFile("map1.map");
             Destroy(this);
         }
+        
         GUI.EndGroup();
     }
 
@@ -56,7 +68,7 @@ private int serverPort = 25000;
 
 	// Use this for initialization
 	void Start () {
-	
+        
 	}
 	
 	// Update is called once per frame

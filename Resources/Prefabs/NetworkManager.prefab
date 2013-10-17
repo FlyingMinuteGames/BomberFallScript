@@ -36,16 +36,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 100000}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b293de9e08e78494aa02f9b1eda88865, type: 3}
+  m_Script: {fileID: 11500000, guid: 4da339d52a1fa3d488b13b1991372720, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   server: 0
   listenPort: 2500
   remoteIP: 
-  _player1GO: {fileID: 0}
-  _player2GO: {fileID: 0}
-  _bombPrefab: {fileID: 0}
-  moveSpeed: 10
+  networkController_tpl: {fileID: 100000, guid: 0601db5209632b54b8725f6a91ca906c,
+    type: 2}
+  m_force: {x: 0, y: 0, z: 0}
 --- !u!148 &14800000
 NetworkView:
   m_ObjectHideFlags: 1

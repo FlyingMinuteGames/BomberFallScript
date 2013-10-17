@@ -20,6 +20,9 @@ public class Maps {
     public static Transform s_stone; // stone template
     public static Transform s_breakable; // stone template
     public static string PATH = Application.dataPath;
+    private static bool resource_loaded = false;
+    private static string[] needed_ressource = new string[] { "Prefabs/Breakable", "Prefabs/Stone", "Materials/ground_mat", "Materials/grid_mat" };
+    private static Dictionary<string, object> s_ressources = new Dictionary<string,object>();
     /* */
 
     //
@@ -46,8 +49,29 @@ public class Maps {
     }
     
 
+    public static bool LoadResources()
+    {
+        if (resource_loaded)
+            return resource_loaded;
+
+        foreach (string s in needed_ressource)
+        {
+            s_ressources[s] = Resources.Load(s);
+            Debug.Log(s_ressources[s] + " " + s_ressources[s].GetType());
+        }
+
+
+        s_material = (Material)s_ressources["Materials/ground_mat"];
+        s_grid = (Material)s_ressources["Materials/grid_mat"];
+        s_stone = ((GameObject)s_ressources["Prefabs/Stone"]).transform;
+        s_breakable = ((GameObject)s_ressources["Prefabs/Breakable"]).transform;
+
+        return resource_loaded;
+    }
+
     public Maps(IntVector2 size = null)
     {
+        Maps.LoadResources();
         Size = size;
         if (m_gameMaps == null)
         {
@@ -210,6 +234,13 @@ public class Maps {
         pos.x = -m_size_2.x + tpos.x + (m_size.x % 2 == 0 ? 0.5f : 0f);
         pos.z = -m_size_2.y + tpos.y + (m_size.y % 2 == 0 ? 0.5f : 0f);
         _out = true;
+        return pos;
+    }
+
+
+    public Vector3 TilePosToWorldPos(IntVector2 tpos)
+    {
+        Vector3 pos = new Vector3(-m_size_2.x + tpos.x,0, -m_size_2.y + tpos.y);
         return pos;
     }
         
