@@ -15,7 +15,7 @@ public class NetworkMgr : MonoBehaviour {
     public string remoteIP;
     public int playerIndex = 0;
     public GameObject networkController_tpl;
-
+    public GameObject bomb;
     private NetworkPlayer[] _players = new NetworkPlayer[4];
     private NetworkController[] controllers = new NetworkController[4];
     private Maps current_map;
@@ -42,6 +42,7 @@ public class NetworkMgr : MonoBehaviour {
             Network.Connect(remoteIP, listenPort);
         }
         current_map = Maps.LoadMapsFromFile("map1.map");
+        bomb = ResourcesLoader.LoadResources<GameObject>("Prefabs/Bomb");
 	}
 
 
@@ -55,7 +56,7 @@ public class NetworkMgr : MonoBehaviour {
             Debug.Log("A player has connected !");
             int index = Network.connections.Length -1;
             _players[index] = player;
-            Network.Instantiate(networkController_tpl, GetInitPos(index), new Quaternion(), 1);
+            Network.Instantiate(networkController_tpl, GetInitPos(index), Quaternion.identity, 1);
 
             //controllers[index] = obj.GetComponent<NetworkController>();
         }
@@ -150,6 +151,41 @@ public class NetworkMgr : MonoBehaviour {
             Debug.Log("update player " + pIndex);
         }
 
+    }
+    [RPC]
+    void ServerRecvDropBomb(NetworkPlayer player)
+    {
+        if (!server)
+            return;
+        int pIndex;
+        if ((pIndex = GetPlayerIndex(player)) >= 0)
+        {
+            Vector3 cpos =  controllers[pIndex].transform.position;
+        }
+
+    }
+
+    [RPC]
+    void ClientRecvDropBomb(NetworkPlayer player)
+    {
+        if (!server)
+            return;
+        int pIndex;
+        if ((pIndex = GetPlayerIndex(player)) >= 0)
+        {
+            Vector3 cpos = controllers[pIndex].transform.position;
+        }
+
+    }
+
+    void HandleBomb(Vector3 pos)
+    {
+        Network.Instantiate(bomb, pos, Quaternion.identity,0);
+    }
+
+    void HandleExplode(IntVector2 pos)
+    { 
+        m
     }
 
 

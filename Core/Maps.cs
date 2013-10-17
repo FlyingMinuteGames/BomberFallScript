@@ -54,17 +54,12 @@ public class Maps {
         if (resource_loaded)
             return resource_loaded;
 
-        foreach (string s in needed_ressource)
-        {
-            s_ressources[s] = Resources.Load(s);
-            Debug.Log(s_ressources[s] + " " + s_ressources[s].GetType());
-        }
+        resource_loaded = true;
 
-
-        s_material = (Material)s_ressources["Materials/ground_mat"];
-        s_grid = (Material)s_ressources["Materials/grid_mat"];
-        s_stone = ((GameObject)s_ressources["Prefabs/Stone"]).transform;
-        s_breakable = ((GameObject)s_ressources["Prefabs/Breakable"]).transform;
+        s_material = ResourcesLoader.LoadResources<Material>("Materials/ground_mat");
+        s_grid = ResourcesLoader.LoadResources<Material>("Materials/grid_mat");
+        s_stone = ResourcesLoader.LoadResources<GameObject>("Prefabs/Stone").transform;
+        s_breakable = ResourcesLoader.LoadResources<GameObject>("Prefabs/Breakable").transform;
 
         return resource_loaded;
     }

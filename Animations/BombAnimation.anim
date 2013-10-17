@@ -23,14 +23,14 @@ AnimationClip:
         tangentMode: -559038737
       - time: 1.16666663
         value: {x: 1, y: 1, z: 1}
-        inSlope: {x: .257142872, y: .257142872, z: .257142872}
-        outSlope: {x: .257142872, y: .257142872, z: .257142872}
+        inSlope: {x: 0, y: 0, z: 0}
+        outSlope: {x: 0, y: 0, z: 0}
         tangentMode: -559038737
       - time: 1.5
         value: {x: 1, y: 1, z: 1}
         inSlope: {x: 0, y: 0, z: 0}
         outSlope: {x: 0, y: 0, z: 0}
-        tangentMode: -559038737
+        tangentMode: 0
       - time: 1.98333335
         value: {x: 1, y: 1, z: 1}
         inSlope: {x: 0, y: 0, z: Infinity}
@@ -692,6 +692,35 @@ AnimationClip:
     path: Fuse_Sphere.001
     classID: 64
     script: {fileID: 0}
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - time: 0
+        value: .389705896
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 10
+      - time: 1.51666665
+        value: .389705896
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+      - time: 1.66666663
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+      - time: 1.83333337
+        value: .389705896
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+    attribute: _Color.r
+    path: body
+    classID: 21
+    script: {fileID: 0}
   m_SampleRate: 60
   m_WrapMode: 1
   m_Bounds:
@@ -723,14 +752,9 @@ AnimationClip:
         tangentMode: 10
       - time: 1.16666663
         value: 1
-        inSlope: .257142872
-        outSlope: .257142872
-        tangentMode: 10
-      - time: 1.5
-        value: 1
         inSlope: 0
         outSlope: 0
-        tangentMode: 10
+        tangentMode: 0
       - time: 1.98333335
         value: 1
         inSlope: 0
@@ -772,9 +796,9 @@ AnimationClip:
         tangentMode: 10
       - time: 1.16666663
         value: 1
-        inSlope: .257142872
-        outSlope: .257142872
-        tangentMode: 10
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
       - time: 1.5
         value: 1
         inSlope: 0
@@ -821,9 +845,9 @@ AnimationClip:
         tangentMode: 10
       - time: 1.16666663
         value: 1
-        inSlope: .257142872
-        outSlope: .257142872
-        tangentMode: 10
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
       - time: 1.5
         value: 1
         inSlope: 0
@@ -1492,5 +1516,41 @@ AnimationClip:
     path: Fuse_Sphere.001
     classID: 64
     script: {fileID: 0}
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - time: 0
+        value: .389705896
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 10
+      - time: 1.51666665
+        value: .389705896
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+      - time: 1.66666663
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+      - time: 1.83333337
+        value: .389705896
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+    attribute: _Color.r
+    path: body
+    classID: 21
+    script: {fileID: 0}
   m_EulerEditorCurves: []
-  m_Events: []
+  m_Events:
+  - time: 1.83333337
+    functionName: 
+    data: 
+    objectReferenceParameter: {fileID: 0}
+    floatParameter: 0
+    intParameter: 0
+    messageOptions: 0
