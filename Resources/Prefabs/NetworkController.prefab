@@ -11,8 +11,9 @@ GameObject:
   - 33: {fileID: 3300000}
   - 23: {fileID: 2300000}
   - 54: {fileID: 5400000}
-  - 65: {fileID: 6500000}
   - 114: {fileID: 11400000}
+  - 148: {fileID: 14800000}
+  - 135: {fileID: 13500000}
   m_Layer: 0
   m_Name: NetworkController
   m_TagString: Untagged
@@ -63,26 +64,14 @@ Rigidbody:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 100000}
   serializedVersion: 2
-  m_Mass: 1
-  m_Drag: 0
+  m_Mass: 28.7999992
+  m_Drag: 20
   m_AngularDrag: 0
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
   m_Constraints: 116
   m_CollisionDetection: 0
---- !u!65 &6500000
-BoxCollider:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 100000}
-  m_Material: {fileID: 13400000, guid: 78159875c1eb23844bc83c51e1ad0d90, type: 2}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 1.00000012, y: 1, z: 1.00000024}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -94,8 +83,34 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d69bc0cc8d7aabb4ca3b1048ea7684a4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_speed: 2
+  m_speed: 5000
+  m_jumpForce: 20
   m_force: {x: 0, y: 0, z: 0}
+  constJumpTimer: 5
+--- !u!135 &13500000
+SphereCollider:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 100000}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: .500000119
+  m_Center: {x: 5.96046448e-08, y: 0, z: -8.94069672e-08}
+--- !u!148 &14800000
+NetworkView:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 100000}
+  m_Enabled: 1
+  m_StateSynchronization: 0
+  m_Observed: {fileID: 400000}
+  m_ViewID:
+    m_ID: 0
+    m_Type: 0
 --- !u!1001 &100100000
 Prefab:
   m_ObjectHideFlags: 1

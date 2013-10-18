@@ -37,7 +37,6 @@ private int serverPort = 25000;
             scriptStartNet = instantiatedMaster.GetComponent<NetworkMgr>();
             scriptStartNet.server = true;
             scriptStartNet.listenPort = serverPort;
-            Maps maps = Maps.LoadMapsFromFile("map1.map");
             Destroy(this);
         }
         if ( GUI.Button(new Rect(10, 60, sizeButtonX, sizeButtonY), "Join"))
@@ -50,7 +49,6 @@ private int serverPort = 25000;
             scriptStartNet.remoteIP = serverIP;
             scriptStartNet.listenPort = serverPort;
             Debug.Log("Main menu remote IP "+serverIP);
-            Maps maps = Maps.LoadMapsFromFile("map1.map");
             Destroy(this);
 
         }

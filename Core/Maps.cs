@@ -244,11 +244,18 @@ public class Maps {
         Vector3 pos = new Vector3(-m_size_2.x + tpos.x,0, -m_size_2.y + tpos.y);
         return pos;
     }
-        
+
+
     public void LoadFromFile(string path)
     {
         Debug.Log("load " + path);
-        FileStream stream = new FileStream(PATH +"\\"+ path, FileMode.Open);
+        FileStream stream = new FileStream(PATH + "\\" + path, FileMode.Open);
+        LoadFromStream(stream);
+        stream.Close();
+    }
+
+    public void LoadFromStream(Stream stream)
+    {
         int x = stream.ReadByte();
         int y = stream.ReadByte();
         Size = new IntVector2(x, y); 
@@ -262,15 +269,21 @@ public class Maps {
                 AddBlock((MapsTiles)type, new IntVector2(i,j));
             }
         }
-        stream.Close();
+        
     }
 
     public void SaveToFile(string path)
+    { 
+        Debug.Log(PATH + "\\" + path);
+        FileStream stream = new FileStream(PATH + "\\" + path, FileMode.Create);
+        SaveToStream(stream);
+        stream.Close();
+    }
+
+    public void SaveToStream(Stream stream)
     {
         if (Size == null)
             return;
-        Debug.Log(PATH + "\\" + path);
-        FileStream stream = new FileStream(PATH + "\\" + path, FileMode.Create);
         stream.WriteByte((byte)Size.x);
         stream.WriteByte((byte)Size.y);
         for (var i = 0; i < Size.x; i++)
@@ -280,9 +293,15 @@ public class Maps {
                 stream.WriteByte((byte)m_maps[i][j].m_type);
             }
         }
-        stream.Close();
-   } 
+        
+   }
 
+    public static Maps LoadMapsFromStream(Stream stream)
+    {
+        Maps m = new Maps();
+        m.LoadFromStream(stream);
+        return m;
+    }
     public static Maps LoadMapsFromFile(string path)
     {
         Maps m = new Maps();
@@ -292,25 +311,33 @@ public class Maps {
 
     public void ExplodeAt(IntVector2 a, int radius)
     {
-
+        int x = a.x + radius, y = a.y + radius, z = a.x - radius, w = a.y - radius;
         for (int i = a.x+1; i <= a.x + radius; i++)
         {
             if (i >= m_size.x)
+            {
+                x = i-1;
                 break;
+            }
             if (m_maps[i][a.y].m_type == MapsTiles.DESTRUCTIBLE_BLOCK)
             {
                 AddBlock(MapsTiles.EMPTY_TILE, new IntVector2(i, a.y));
+                x = i-1;
                 break;
             }
         }
 
-        for (int i = a.x-1; i >= a.x-1-radius; i--)
+        for (int i = a.x-1; i >= a.x-radius; i--)
         {
             if (i < 0)
+            {
+                z = i+1;
                 break;
+            }
             if (m_maps[i][a.y].m_type == MapsTiles.DESTRUCTIBLE_BLOCK)
             {
                 AddBlock(MapsTiles.EMPTY_TILE, new IntVector2(i, a.y));
+                z = i+1;
                 break;
             }
         }
@@ -318,24 +345,37 @@ public class Maps {
         for (int i = a.y+1; i <= a.y + radius; i++)
         {
             if (i >= m_size.y)
+            {
+                y = i - 1;
                 break;
+            }
             if (m_maps[a.x][i].m_type == MapsTiles.DESTRUCTIBLE_BLOCK)
             {
                 AddBlock(MapsTiles.EMPTY_TILE, new IntVector2(a.x, i));
+                y = i - 1;
                 break;
             }
         }
 
-        for (int i = a.y-1; i >= a.y - 1 - radius; i--)
+        for (int i = a.y-1; i >= a.y - radius; i--)
         {
 
             if (i < 0)
+            {
+                w = i + 1;
                 break;
+            }
             if (m_maps[a.x][i].m_type == MapsTiles.DESTRUCTIBLE_BLOCK)
             {
                 AddBlock(MapsTiles.EMPTY_TILE, new IntVector2(a.x, i));
+                w = i + 1;
                 break;
             }
+        }
+
+        if (NetworkMgr.Instance != null && NetworkMgr.Instance.server)
+        {
+            NetworkMgr.Instance.HandleKillPlayer(new Cross(a, x, y, z, w));
         }
 
 

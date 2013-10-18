@@ -11,20 +11,14 @@
 using UnityEngine;
 using System.Collections;
 
-public enum WorldState
-{
-    CENTER,
-    LATERAL_X,
-    LATERAL_X2,
-    LATERAL_Z,
-    LATERAL_Z2
-}
+
 
 public class BomberController : MonoBehaviour {
 
 	delegate void Callback(BomberController me, bool enable);
     public float m_speed = 1.0f;
     public Vector3 m_force = new Vector3(0,0,0);
+    private Vector3 current_velocity = new Vector3();
     private KeyCode[] key_binding = {KeyCode.Z,KeyCode.Q,KeyCode.S,KeyCode.D,KeyCode.Keypad2,KeyCode.Keypad5};
     private Callback[] action_callback = {
                                             (me,enable) => { me.m_force += enable ? Vector3.forward : Vector3.back; },
@@ -65,7 +59,8 @@ public class BomberController : MonoBehaviour {
 	void Update () 
     {
         Debug.Log("current force " + Physics.gravity);
-        rigidbody.velocity = (GetCurrentMove() * m_speed);//);
+        current_velocity = (GetCurrentMove() * m_speed) - current_velocity;
+        rigidbody.velocity += current_velocity;//);
         //= GetCurrentMove() * m_speed;
 
 	}
